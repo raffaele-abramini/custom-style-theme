@@ -1,19 +1,5 @@
 import { memoizer } from "./baseMemoizer";
 
-const queryCheck = (s) => document.createDocumentFragment().querySelector(s);
-
-const isSelectorValid = (selector) => {
-  try {
-    queryCheck(selector);
-  } catch {
-    return false;
-  }
-  return true;
-};
-
-const camelCaseToKebabCase = (string) =>
-  string.replace(/(?<=[a-z])[A-Z]/g, (a) => `-${a.toLocaleLowerCase()}`);
-
 const sortBySpecificity = (a, b) => a.specificity - b.specificity;
 
 const formatCustomRules = (customObj) => {
@@ -23,17 +9,21 @@ const formatCustomRules = (customObj) => {
     const groups = key.split(",").map((g) => g.trim());
 
     groups.forEach((group) => {
-      const conditions = group.split(".").map((condition) => {
-        console.log("looping through");
+      const conditions = group
+        .split(".")
+        .filter(Boolean)
+        .map((condition) => {
+          console.log("looping through");
 
-        const [, propName, propVal] = condition.match(/(.+)_(.+)/) || [];
+          const [, propName, propVal] =
+            condition.match(/([a-zA-Z]+)_([a-zA-Z]+)/) || [];
 
-        if (!propName) {
-          console.error(condition, "is not a valid format rule");
-        }
+          if (!propName) {
+            console.error(propName, "is not a valid format rule");
+          }
 
-        return { propName, propVal };
-      });
+          return { propName, propVal };
+        });
 
       customRules.push({
         conditions,
@@ -51,10 +41,10 @@ const getRules = (customObj) => {
     propVariants = {};
 
   Object.keys(customObj).forEach((key) => {
-    if (CSS.supports(camelCaseToKebabCase(key), customObj[key])) {
-      cssRules[key] = customObj[key];
-    } else {
+    if (key.match(/^\.([a-zA-Z]+)_(.+)/g)) {
       propVariants[key] = customObj[key];
+    } else {
+      cssRules[key] = customObj[key];
     }
   });
   console.log(cssRules);

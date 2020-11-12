@@ -1,24 +1,29 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
 import styled from "@emotion/styled";
-import { applyFromTheme } from "./helpers";
+import { applyFromTheme } from "./themeHelpers";
 
 // TODO
 // - [x] Support comma
-// - [] Add memo
+// - [x] Add memo
+// - [x] Better css support
+// - [] Better TS support
 
 const customTheme = {
   Button: {
+    // direct css rules
     borderRadius: "4px",
 
-    // span: {
-    //   fontWeight: "bold"
-    // },
+    // nested css rules
+    span: {
+      fontWeight: "bold"
+    },
 
-    "variant_primary.size_small": {
+    // prop-based rules
+    ".variant_primary.size_small": {
       color: "yellow"
     },
-    "variant_primary, variant_secondary": {
+    ".variant_primary, .variant_secondary": {
       color: "red"
     }
   }
@@ -29,6 +34,7 @@ const Button = styled.button`
   border: none;
   margin: 5px;
   padding: 10px;
+  
   // some styles here
   ${(p) =>
     p.size === "small" &&
@@ -52,20 +58,21 @@ const Button = styled.button`
 export default function App() {
   const [id, setId] = useState(0);
 
-  useEffect(() => {
-    setTimeout(() => setId(id + 1), 1000);
-  }, [id]);
+  // This is here just to test performances ⬇️
+  // useEffect(() => {
+  //   setTimeout(() => setId(id + 1), 1000);
+  // }, [id]);
 
   return (
     <div className="App">
       <Button variant="primary" id={id}>
-        Primary
+        <span>Primary</span>
       </Button>
       <Button variant="primary" size="small" id={id}>
-        Primary small
+        <span>Primary small</span>
       </Button>
       <Button variant="secondary" id={id}>
-        Secondary
+        <span>Secondary</span>
       </Button>
     </div>
   );
